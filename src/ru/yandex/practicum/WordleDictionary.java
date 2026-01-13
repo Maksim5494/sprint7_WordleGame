@@ -10,8 +10,6 @@ public class WordleDictionary {
         this.words = words;
     }
 
-    
-    // Метод для получения случайного слова определённой длины
     public String getRandomWordOfLength(int length) {
         List<String> validWords = new ArrayList<>();
         for (String word : words) {
