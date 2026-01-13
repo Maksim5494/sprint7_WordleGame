@@ -1,14 +1,34 @@
 package ru.yandex.practicum;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Random;
 
-/*
-этот класс содержит в себе список слов List<String>
-    его методы похожи на методы списка, но учитывают особенности игры
-    также этот класс может содержать рутинные функции по сравнению слов, букв и т.д.
- */
 public class WordleDictionary {
-
     private List<String> words;
 
+    public WordleDictionary(List<String> words) {
+        this.words = words;
+    }
+
+    
+    // Метод для получения случайного слова определённой длины
+    public String getRandomWordOfLength(int length) {
+        List<String> validWords = new ArrayList<>();
+        for (String word : words) {
+            if (word.length() == length) {
+                validWords.add(word);
+            }
+        }
+
+        if (validWords.isEmpty()) {
+            throw new RuntimeException("Нет слов заданной длины в словаре.");
+        }
+
+        int randomIndex = (int) (Math.random() * validWords.size());
+        return validWords.get(randomIndex);
+    }
 }
+
+
+
