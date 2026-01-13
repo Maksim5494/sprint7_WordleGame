@@ -2,7 +2,6 @@ package ru.yandex.practicum;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class WordleDictionary {
     private List<String> words;
