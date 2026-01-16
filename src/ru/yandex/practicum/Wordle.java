@@ -5,8 +5,6 @@ import java.util.List;
 
 public class Wordle {
     public static void main(String[] args) {
-
-
         try {
             WordleDictionaryLoader loader = new WordleDictionaryLoader();
             List<String> loadedWords = loader.loadDictionary("C:/Users/Макс/IdeaProjects/sprint7_WordleGame/words.txt");

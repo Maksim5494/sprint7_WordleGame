@@ -9,9 +9,6 @@ public class WordleGame {
 
     public WordleGame(WordleDictionary dictionary) {
         this.dictionary = dictionary;
-        // Здесь можно добавить инициализацию других полей, например:
-        // this.answer = dictionary.getRandomWord();
-        // this.steps = 0;
     }
 
     public boolean isGuessCorrect(String guess) {
@@ -33,21 +30,20 @@ public class WordleGame {
     public void startGame() {
         Scanner scanner = new Scanner(System.in);
         this.answer = dictionary.getRandomWordOfLength(5); // Получаем случайное слово из словаря
-        this.steps = 0; // Инициализируем количество шагов
+        this.steps = 0; // количество шагов
         final int MAX_ATTEMPTS = 6; // Максимальное количество попыток
 
         System.out.println("Игра началась! Загадано слово.");
-
-        String guess = ""; // Объявляем переменную guess здесь
+        String guess = "";
 
         while (steps < MAX_ATTEMPTS) {
             steps++;
             System.out.print("Попытка " + steps + ". Введите слово: ");
-            guess = scanner.nextLine().trim(); // Инициализируем guess внутри цикла
+            guess = scanner.nextLine().trim();
 
             if (guess.length() != answer.length()) {
                 System.out.println("Длина введённого слова не соответствует длине загаданного слова. Попробуйте ещё раз.");
-                continue; // Переход к следующему шагу цикла, запрос нового ввода
+                continue;
             }
 
             if (isGuessCorrect(guess)) {
@@ -64,7 +60,6 @@ public class WordleGame {
             System.out.println("Вы не смогли угадать слово за " + MAX_ATTEMPTS + " попыток. Игра окончена.");
         }
     }
-
 
     private String getFeedback(String guess) {
         StringBuilder feedback = new StringBuilder();
@@ -95,9 +90,6 @@ public class WordleGame {
         return count;
     }
 
-
-
-
     private int countCorrectLetters(String guess) {
         int count = 0;
         for (int i = 0; i < guess.length(); i++) {
@@ -107,7 +99,4 @@ public class WordleGame {
         }
         return count;
     }
-
-
-
 }
