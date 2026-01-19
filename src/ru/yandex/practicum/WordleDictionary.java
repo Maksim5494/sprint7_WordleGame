@@ -13,6 +13,10 @@ public class WordleDictionary {
         }
     }
 
+    public boolean containsWord(String word) {
+        return words.contains(word);
+    }
+
     public String getRandomWordOfLength(int length) {
         List<String> validWords = new ArrayList<>();
         for (String word : words) {
