@@ -7,7 +7,14 @@ public class WordleDictionary {
     private List<String> words;
 
     public WordleDictionary(List<String> words) {
-        this.words = words;
+        this.words = new ArrayList<>();
+        for (String word : words) {
+            this.words.add(WordProcessor.processWord(word));
+        }
+    }
+
+    public boolean containsWord(String word) {
+        return words.contains(word);
     }
 
     public String getRandomWordOfLength(int length) {
@@ -25,7 +32,23 @@ public class WordleDictionary {
         int randomIndex = (int) (Math.random() * validWords.size());
         return validWords.get(randomIndex);
     }
-}
 
+    static class WordProcessor {
+        public static String processWord(String word) {
+            // Приводим слово к нижнему регистру
+            word = word.toLowerCase();
+
+            // Заменяем ё на е
+            word = word.replace('ё', 'е');
+
+            return word;
+        }
+    }
+
+    public List<String> getWords() {
+        return words;
+    }
+
+}
 
 

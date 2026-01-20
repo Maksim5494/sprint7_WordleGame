@@ -1,102 +1,111 @@
 package ru.yandex.practicum;
 
-import java.util.Scanner;
+import java.util.*;
+import java.io.*;
 
 public class WordleGame {
     private String answer;
     private int steps;
-    private WordleDictionary dictionary;
+    private final WordleDictionary dictionary;
+    private final PrintWriter log;
+    private final Wordle view;
+    private final List<String> userGuesses = new ArrayList<>();
+    private final List<String> feedbackHistory = new ArrayList<>();
 
-    public WordleGame(WordleDictionary dictionary) {
+    public WordleGame(WordleDictionary dictionary) throws IOException {
         this.dictionary = dictionary;
-    }
-
-    public boolean isGuessCorrect(String guess) {
-        return guess.equals(answer);
-    }
-
-    class GameException extends Exception {
-        public GameException(String message) {
-            super(message);
-        }
-    }
-
-    class InvalidGuessException extends GameException {
-        public InvalidGuessException(String message) {
-            super(message);
-        }
+        this.log = new PrintWriter(new FileWriter("game_log.txt", true));
+        this.view = new Wordle();
     }
 
     public void startGame() {
+        this.answer = dictionary.getRandomWordOfLength(5).toLowerCase();
+        int MAX_ATTEMPTS = 6;
         Scanner scanner = new Scanner(System.in);
-        this.answer = dictionary.getRandomWordOfLength(5); // Получаем случайное слово из словаря
-        this.steps = 0; // количество шагов
-        final int MAX_ATTEMPTS = 6; // Максимальное количество попыток
 
-        System.out.println("Игра началась! Загадано слово.");
-        String guess = "";
+        view.displayMessage("Игра началась! Загадано слово из 5 букв.");
 
         while (steps < MAX_ATTEMPTS) {
-            steps++;
-            System.out.print("Попытка " + steps + ". Введите слово: ");
-            guess = scanner.nextLine().trim();
+            view.displayMessage("\nПопытка " + (steps + 1) + ". Введите слово (или Enter для подсказки):");
+            String guess = scanner.nextLine().trim().toLowerCase();
 
-            if (guess.length() != answer.length()) {
-                System.out.println("Длина введённого слова не соответствует длине загаданного слова. Попробуйте ещё раз.");
+            if (guess.isEmpty()) {
+                view.displayMessage("Подсказка (лучшее слово): " + getHint());
                 continue;
             }
 
-            if (isGuessCorrect(guess)) {
-                System.out.println("Поздравляем! Вы угадали слово за " + steps + " шагов.");
-                break;
-            } else {
-                System.out.println("Неверно! Попробуйте еще раз.");
-                String feedback = getFeedback(guess); // Получаем подсказку
-                System.out.println("Подсказка: " + feedback); // Выводим подсказку
+            if (guess.length() != 5) {
+                view.displayMessage("Ошибка: длина слова должна быть 5 символов.");
+                continue;
+            }
+
+            if (!dictionary.containsWord(guess)) {
+                view.displayMessage("Такого слова нет в словаре!");
+                continue;
+            }
+
+            steps++;
+            String feedback = getFeedback(guess);
+            userGuesses.add(guess);
+            feedbackHistory.add(feedback);
+
+            log.println("Попытка " + steps + ": " + guess + " | Результат: " + feedback);
+            view.displayMessage("Результат: " + feedback);
+
+            if (guess.equals(answer)) {
+                view.displayMessage("Поздравляем! Вы угадали слово за " + steps + " шагов.");
+                log.println("Игра выиграна.");
+                closeLog();
+                return;
             }
         }
 
-        if (steps == MAX_ATTEMPTS && !isGuessCorrect(guess)) {
-            System.out.println("Вы не смогли угадать слово за " + MAX_ATTEMPTS + " попыток. Игра окончена.");
-        }
+        view.displayMessage("Вы не смогли угадать слово. Загаданное слово было: " + answer);
+        log.println("Игра проиграна. Слово: " + answer);
+        closeLog();
     }
 
     private String getFeedback(String guess) {
-        StringBuilder feedback = new StringBuilder();
-        for (int i = 0; i < guess.length(); i++) {
-            char guessChar = guess.charAt(i);
-            if (guessChar == answer.charAt(i)) {
-                feedback.append("+");
-            } else if (answer.contains(String.valueOf(guessChar))) {
-                if (countOccurrences(guessChar, guess) <= countOccurrences(guessChar, answer)) {
-                    feedback.append("^");
-                } else {
-                    feedback.append("-");
-                }
+        char[] result = new char[5];
+        java.util.Map<Character, Integer> targetCounts = new java.util.HashMap<>();
+
+        // Сначала заполняем массив результатами '+' и считаем символы, которые не совпали точно
+        for (int i = 0; i < 5; i++) {
+            char targetChar = answer.charAt(i);
+            if (guess.charAt(i) == targetChar) {
+                result[i] = '+';
             } else {
-                feedback.append("-");
+                result[i] = '-';
+                targetCounts.put(targetChar, targetCounts.getOrDefault(targetChar, 0) + 1);
             }
         }
-        return feedback.toString();
+
+        // Второй проход для определения символов на других позициях '^'
+        for (int i = 0; i < 5; i++) {
+            if (result[i] == '+') continue;
+
+            char guessChar = guess.charAt(i);
+            if (targetCounts.getOrDefault(guessChar, 0) > 0) {
+                result[i] = '^';
+                targetCounts.put(guessChar, targetCounts.get(guessChar) - 1);
+            }
+        }
+
+        return new String(result);
     }
 
-    private int countOccurrences(char ch, String str) {
-        int count = 0;
-        for (int i = 0; i < str.length(); i++) {
-            if (str.charAt(i) == ch) {
-                count++;
+    private String getHint() {
+        // Упрощенная логика подсказки: ищем в словаре подходящее слово
+        for (String word : dictionary.getWords()) {
+            if (word.length() == 5 && !userGuesses.contains(word)) {
+                return word;
             }
         }
-        return count;
+        return "Слова не найдены";
     }
 
-    private int countCorrectLetters(String guess) {
-        int count = 0;
-        for (int i = 0; i < guess.length(); i++) {
-            if (guess.charAt(i) == answer.charAt(i)) {
-                count++;
-            }
-        }
-        return count;
+    public void closeLog() {
+        log.flush();
+        log.close();
     }
 }
