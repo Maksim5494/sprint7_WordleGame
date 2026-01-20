@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.WordleDictionary;
 import ru.yandex.practicum.WordleGame;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,13 +27,9 @@ class WordleTest {
         assertEquals(4, randomWord.length());
         assertTrue(words.contains(randomWord));
     }
-    @BeforeAll
-    static void initOnce() {
-        dictionary = new WordleDictionary();
-        // Другие общие инициализации
-    }
+
     @BeforeEach
-    void init() {
+    void init() throws IOException {
         game = new WordleGame(dictionary);
         game.startGame();
     }
