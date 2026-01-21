@@ -30,12 +30,12 @@ public class WordleGame {
 
     public void startGame() {
         this.answer = dictionary.getRandomWordOfLength(5).toLowerCase();
-        int MAX_ATTEMPTS = 6;
+        int maxAttempts = 6;
         Scanner scanner = new Scanner(System.in);
 
         view.displayMessage("Игра началась! Загадано слово из 5 букв.");
 
-        while (steps < MAX_ATTEMPTS) {
+        while (steps < maxAttempts) {
             view.displayMessage("\nПопытка " + (steps + 1) + ". Введите слово (или Enter для подсказки):");
             String input = scanner.nextLine().trim().toLowerCase();
 
