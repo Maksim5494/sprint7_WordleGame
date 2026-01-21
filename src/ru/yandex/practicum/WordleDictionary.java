@@ -33,12 +33,14 @@ public class WordleDictionary {
         return validWords.get(randomIndex);
     }
 
+    public String getRandomWord() {
+        int randomIndex = (int) (Math.random() * words.size());
+        return words.get(randomIndex);
+    }
+
     static class WordProcessor {
         public static String processWord(String word) {
-            // Приводим слово к нижнему регистру
             word = word.toLowerCase();
-
-            // Заменяем ё на е
             word = word.replace('ё', 'е');
 
             return word;
@@ -50,5 +52,3 @@ public class WordleDictionary {
     }
 
 }
-
-
